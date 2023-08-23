@@ -6,7 +6,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Boxes", "source\Boxes\Boxes
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{A909E685-67A8-44BB-B52C-C54DD6CDB729}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Boxes.Options.Tests", "tests\Boxes.Options.Tests\Boxes.Options.Tests.csproj", "{63E1B9E2-93D8-4080-964A-0202C492D505}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Boxes.Tests", "tests\Boxes.Tests\Boxes.Tests.csproj", "{63E1B9E2-93D8-4080-964A-0202C492D505}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "benchmarks", "benchmarks", "{866A900B-34EF-4C8E-BC54-9CF3C4885FAD}"
 EndProject

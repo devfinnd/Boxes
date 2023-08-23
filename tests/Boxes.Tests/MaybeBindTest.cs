@@ -1,4 +1,6 @@
-﻿namespace Boxes.Options.Tests;
+﻿using Boxes.Options;
+
+namespace Boxes.Tests;
 
 public sealed class MaybeBindTest
 {
