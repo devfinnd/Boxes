@@ -1,4 +1,4 @@
-﻿using Boxes.Options;
+﻿using Boxes.Types;
 
 namespace Boxes.Tests;
 

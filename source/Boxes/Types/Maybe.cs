@@ -1,4 +1,4 @@
-﻿namespace Boxes.Options;
+﻿namespace Boxes.Types;
 
 public abstract class Maybe<T>
 {
