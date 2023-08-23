@@ -1,6 +1,5 @@
 ﻿using Boxes.Types;
 
-
 namespace Boxes;
 
 public static class MaybePrelude
