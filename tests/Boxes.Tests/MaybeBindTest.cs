@@ -1,4 +1,5 @@
-﻿using Boxes.Types;
+﻿using Boxes.Operators;
+using Boxes.Types;
 
 namespace Boxes.Tests;
 
@@ -11,6 +12,6 @@ public sealed class MaybeBindTest
         Maybe<int> a = Some(input)
             .Bind(static x => Some(x * 2));
 
-        Assert.Equal(outcome, a.Reduce(-17));
+        Assert.Equal(outcome, a.Unwrap());
     }
 }

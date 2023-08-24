@@ -3,4 +3,4 @@
 using BenchmarkDotNet.Running;
 using Boxes.Benchmarks;
 
-BenchmarkRunner.Run<BenchNoneAllocations>();
+BenchmarkRunner.Run<BenchMaybeAllocations>();

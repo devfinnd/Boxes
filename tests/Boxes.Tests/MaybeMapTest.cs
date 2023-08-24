@@ -1,4 +1,5 @@
-using Boxes.Options;
+using Boxes.Operators;
+using Boxes.Types;
 
 namespace Boxes.Tests;
 
@@ -12,7 +13,7 @@ public class MaybeMapTest
         Maybe<int> a = Some(input)
             .Map(static x => x * 2);
 
-        Assert.Equal(outcome, a.Reduce(-17));
+        Assert.Equal(outcome, a.Unwrap());
     }
 
     [Theory]
@@ -22,12 +23,12 @@ public class MaybeMapTest
         Maybe<object> a = Some(input)
             .Map(_ => outcome);
 
-        Assert.Equal(outcome, a.Reduce(-17));
+        Assert.Equal(outcome, a.Unwrap());
     }
 
     public static IEnumerable<object[]> ObjectData()
     {
-        yield return new object[]{ "SomeString", 15 };
-        yield return new object[]{ DateTime.Now, DateTimeOffset.UtcNow };
+        yield return new object[] { "SomeString", 15 };
+        yield return new object[] { DateTime.Now, DateTimeOffset.UtcNow };
     }
 }
