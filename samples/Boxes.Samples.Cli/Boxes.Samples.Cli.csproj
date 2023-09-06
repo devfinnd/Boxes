@@ -8,11 +8,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="BenchmarkDotNet" Version="0.13.7" />
+        <PackageReference Include="Dapper" Version="2.0.151" />
+        <PackageReference Include="System.Data.SQLite" Version="1.0.118" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\source\Boxes.BclCompatability\Boxes.BclCompatability.csproj" />
       <ProjectReference Include="..\..\source\Boxes\Boxes.csproj" />
     </ItemGroup>
 

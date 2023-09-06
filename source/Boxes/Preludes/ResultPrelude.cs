@@ -1,12 +1,13 @@
-﻿using Boxes.Types;
+﻿using System.Diagnostics;
+using Boxes.Types;
 
 namespace Boxes.Preludes;
 
+[DebuggerStepThrough]
 public static class ResultPrelude
 {
-    public static Success<T> Success<T>(T value) => new(value);
-    public static Failure<T> Failure<T>(Exception exception) => new(exception);
-    public static Func<T, Result<U>> Lift<T, U>(Func<T, U> func) => x => Try(() => func(x));
+    public static Result<T> Success<T>(T value) => new Success<T>(value);
+    public static Result<T> Failure<T>(Exception exception) => new Failure<T>(exception);
     public static Result<T> Try<T>(Func<T> func)
     {
         try

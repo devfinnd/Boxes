@@ -15,16 +15,6 @@ public sealed class ResultBindTest
     }
 
     [Fact]
-    public void Result_BindFailure_ShouldWorkShouldThrowOnUnwrap()
-    {
-        Func<int, string> thing = IntToString;
-        Result<string> a = Failure<int>(new Exception())
-            .Bind(Lift(thing));
-
-        Assert.Throws<Exception>(() => a.Unwrap());
-    }
-
-    [Fact]
     public void Result_BindSuccessToFailure_ShouldThrowOnUnwrap()
     {
         var a = Success(15)
