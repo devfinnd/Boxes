@@ -1,0 +1,19 @@
+kind: pipeline
+spec:
+  stages:
+    - name: build
+      spec:
+        platform:
+          arch: amd64
+          os: linux
+        steps:
+          - name: Build
+            spec:
+              script: dotnet build
+              shell: bash
+              container:
+                image: mcr.microsoft.com/dotnet/sdk:8.0
+                pull: if-not-exists
+            type: run
+      type: ci
+version: 1
