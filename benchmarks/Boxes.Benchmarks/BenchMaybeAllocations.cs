@@ -38,6 +38,6 @@ public class BenchMaybeAllocations
     public int BindNoneTwice() => _none.Bind(MaybeInplace).Bind(MaybeInplace).UnwrapOr(_fallback);
 
 
-    private static int Inplace(int input) => input;
+    private static T Inplace<T>(T input) => input;
     private static Maybe<int> MaybeInplace(int input) => Some(input);
 }

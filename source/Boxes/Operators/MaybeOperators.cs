@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using Boxes.Exceptions;
 using Boxes.Types;
 using static Boxes.Preludes.MaybePrelude;
@@ -13,6 +14,14 @@ public static class MaybeOperators
     {
         Some<T> some => Some(mapper(some.Unwrap())),
         None<T> => None<U>(),
+        _ => throw new InvalidOperationException($"{maybe.GetType().Name} is not a valid maybe subtype")
+    };
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Maybe<U> MapInlined<T, U>(this Maybe<T> maybe, Func<T, U> mapper) where T : notnull where U : notnull => maybe switch
+    {
+        Some<T> some => SomeInlined(mapper(some.Unwrap())),
+        None<T> => NoneInlined<U>(),
         _ => throw new InvalidOperationException($"{maybe.GetType().Name} is not a valid maybe subtype")
     };
 
