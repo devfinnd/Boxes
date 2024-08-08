@@ -14,32 +14,19 @@ public class InliningBenchmark
     public string BenchSome() => Some(_value).Unwrap();
 
     [Benchmark]
-    public string BenchSomeInlined() => SomeInlined(_value).Unwrap();
-
-    [Benchmark]
     public string BenchNone() => None<string>().UnwrapOr(_value);
-
-    [Benchmark]
-    public string BenchNoneInlined() => NoneInlined<string>().UnwrapOr(_value);
 
     [Benchmark]
     public string BenchSomeMap() => Some(_value).Map(Inplace).Unwrap();
 
     [Benchmark]
-    public string BenchSomeMapInlined() => Some(_value).MapInlined(Inplace).Unwrap();
+    public string BenchSomeMapInlined() => Some(_value).Map(Inplace).Unwrap();
 
     [Benchmark]
     public string BenchNoneMap() => None<string>().Map(Inplace).UnwrapOr(_value);
 
     [Benchmark]
-    public string BenchNoneMapInlined() => None<string>().MapInlined(Inplace).UnwrapOr(_value);
-
-    [Benchmark]
-    public string FullSomeInlined() => SomeInlined(_value).MapInlined(Inplace).Unwrap();
-
-    [Benchmark]
-    public string FullNoneInlined() => NoneInlined<string>().MapInlined(Inplace).UnwrapOr(_value);
-
+    public string BenchNoneMapInlined() => None<string>().Map(Inplace).UnwrapOr(_value);
 
     private static T Inplace<T>(T input) => input;
 }

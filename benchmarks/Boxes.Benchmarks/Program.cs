@@ -1,4 +1,4 @@
 ﻿using BenchmarkDotNet.Running;
 using Boxes.Benchmarks;
 
-BenchmarkRunner.Run<InliningBenchmark>();
+BenchmarkRunner.Run<BenchMaybeAllocations>();

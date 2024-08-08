@@ -5,6 +5,15 @@ namespace Boxes.Tests;
 
 public sealed class ResultBindTest
 {
+    private static Exception _allocatedException;
+    private const string _expectedFailureMessage = "Expected Failure";
+    private const string _expectedSuccessMessage = "Expected Success";
+
+    public ResultBindTest()
+    {
+        _allocatedException = new Exception();
+    }
+
     [Fact]
     public void Result_BindSuccess_ShouldWork()
     {
@@ -18,7 +27,7 @@ public sealed class ResultBindTest
     public void Result_BindSuccessToFailure_ShouldThrowOnUnwrap()
     {
         var a = Success(15)
-            .Bind(static _ => Failure<string>(new Exception()));
+            .Bind(static _ => Failure<string>(_expectedFailureMessage, _allocatedException));
 
         Assert.Throws<Exception>(() => a.Unwrap());
     }
@@ -27,11 +36,9 @@ public sealed class ResultBindTest
     public void Result_Bind_ShouldChangeUnderlyingResultType()
     {
         var a = Success(15)
-            .Bind(static _ => Success("Hello World!"));
+            .Bind(static _ => Success(_expectedSuccessMessage));
 
         Assert.IsAssignableFrom<Result<string>>(a);
         Assert.IsType<Success<string>>(a);
     }
-
-    private static string IntToString(int x) => x.ToString();
 }

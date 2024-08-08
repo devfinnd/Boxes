@@ -1,35 +1,56 @@
 ﻿using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using Boxes.Exceptions;
+using JetBrains.Annotations;
 
 namespace Boxes.Types;
 
 [DebuggerStepThrough]
 public abstract class Result<T> : IEquatable<Result<T>>
 {
+    /// <summary>
+    /// Unwraps the value from the Result. If the Result is a Failure, an exception is thrown.
+    /// </summary>
+    /// <exception cref="FailureUnwrapedException"></exception>
+    /// <returns>The unwrapped value</returns>
     public abstract T Unwrap();
-    public abstract T UnwrapOrRecover(Func<Exception, T> recover);
+
+    /// <summary>
+    /// Unwraps the value from the Result. If the Result is a Failure, the provided function is called with the error.
+    /// </summary>
+    /// <param name="recover">The function to call with the error</param>
+    /// <returns>The unwrapped value</returns>
+    public abstract T UnwrapOrRecover(Func<Error, T> recover);
+
+    /// <summary>
+    /// Unwraps the value from the Result. If the Result is a Failure, the provided function is called.
+    /// </summary>
+    /// <param name="recover">The function to call</param>
+    /// <returns>The unwrapped value</returns>
     public abstract T UnwrapOrRecover(Func<T> recover);
+
+    /// <summary>
+    /// Unwraps the value from the Result. If the Result is a Failure, the provided value is returned.
+    /// </summary>
+    /// <param name="recover">The value to return</param>
+    /// <returns>The unwrapped value</returns>
     public abstract T UnwrapOrRecover(T recover);
 
     #region Equality
 
-    public bool Equals(Result<T>? other)
+    public bool Equals(Result<T>? other) => (this, other) switch
     {
-        if (this is Success<T> success && other is Success<T>)
-            return success.Equals(other);
+        (Success<T> selfSuccess, Success<T> otherSuccess) => selfSuccess.Equals(otherSuccess),
+        (Failure<T> selfFailure, Failure<T> otherFailure) => selfFailure.Equals(otherFailure),
+        _ => false
+    };
 
-        if (this is Failure<T> failure && other is Failure<T>)
-            return failure.Equals(other);
-
-        throw new InvalidOperationException($"{GetType().Name} is not a valid Result subtype");
-    }
-
-    public override bool Equals(object? obj)
+    public override bool Equals(object? other) => (this, other) switch
     {
-        if (ReferenceEquals(null, obj)) return false;
-        if (ReferenceEquals(this, obj)) return true;
-        return obj is Result<T> result && Equals(result);
-    }
+        (null, _) => false,
+        (_, null) => false,
+        _ => Equals(other as Result<T>)
+    };
 
     public override int GetHashCode() => this switch
     {
@@ -42,14 +63,12 @@ public abstract class Result<T> : IEquatable<Result<T>>
 }
 
 [DebuggerStepThrough]
-public sealed class Success<T> : Result<T>, IEquatable<Success<T>>
+public sealed class Success<T>(T value) : Result<T>, IEquatable<Success<T>>
 {
-    private readonly T _value;
-
-    public Success(T value) => _value = value;
+    private readonly T _value = value;
 
     public override T Unwrap() => _value;
-    public override T UnwrapOrRecover(Func<Exception, T> recover) => _value;
+    public override T UnwrapOrRecover(Func<Error, T> recover) => _value;
     public override T UnwrapOrRecover(Func<T> recover) => _value;
     public override T UnwrapOrRecover(T recover) => _value;
 
@@ -57,14 +76,17 @@ public sealed class Success<T> : Result<T>, IEquatable<Success<T>>
 
     #region Equality
 
-    public bool Equals(Success<T>? other) => other is not null && EqualityComparer<T>.Default.Equals(_value, other._value);
-
-    public override bool Equals(object? obj)
+    public bool Equals(Success<T>? other) => other switch
     {
-        if (ReferenceEquals(null, obj)) return false;
-        if (ReferenceEquals(this, obj)) return true;
-        return ReferenceEquals(this, obj) || obj is Success<T> other && Equals(other);
-    }
+        null => false,
+        _ => EqualityComparer<T>.Default.Equals(_value, other._value)
+    };
+
+    public override bool Equals(object? obj) => obj switch
+    {
+        Success<T> other => Equals(other),
+        _ => false
+    };
 
     public override int GetHashCode() => HashCode.Combine(GetType(), _value);
 
@@ -72,34 +94,36 @@ public sealed class Success<T> : Result<T>, IEquatable<Success<T>>
 }
 
 [DebuggerStepThrough]
-public sealed class Failure<T> : Result<T>, IEquatable<Failure<T>>
+public sealed class Failure<T>(Error error) : Result<T>, IEquatable<Failure<T>>
 {
-    private readonly Exception _exception;
-
-    public Failure(Exception exception) => _exception = exception;
+    private readonly Error _error = error;
 
     [DoesNotReturn]
-    public override T Unwrap() => throw _exception;
+    [ContractAnnotation("=> halt")]
+    public override T Unwrap() => _error switch
+    {
+        SimpleError simple  => throw new FailureUnwrapedException(simple.Message),
+        DetailedError detailed => throw new FailureUnwrapedException(detailed.Message, detailed.Data),
+        ExceptionalError exceptional => throw new FailureUnwrapedException(exceptional.Message, exceptional.Exception),
+        _ => throw new InvalidOperationException(_error.Message)
+    };
 
-    public override T UnwrapOrRecover(Func<Exception, T> recover) => recover(_exception);
+    public override T UnwrapOrRecover(Func<Error, T> recover) => recover(_error);
     public override T UnwrapOrRecover(Func<T> recover) => recover();
     public override T UnwrapOrRecover(T recover) => recover;
-    public Failure<U> Forward<U>() => new(_exception);
-
-    public static implicit operator Failure<T>(Exception exception) => new(exception);
+    public Failure<TOther> Forward<TOther>() => new(_error);
 
     #region Equality
 
-    public bool Equals(Failure<T>? other) => other is not null && _exception.Equals(other._exception);
+    public bool Equals(Failure<T>? other) => other is not null && ReferenceEquals(_error, other._error);
 
-    public override bool Equals(object? obj)
+    public override bool Equals(object? obj) => obj switch
     {
-        if (ReferenceEquals(null, obj)) return false;
-        if (ReferenceEquals(this, obj)) return true;
-        return ReferenceEquals(this, obj) || obj is Failure<T> other && Equals(other);
-    }
+        Failure<T> other => Equals(other),
+        _ => false
+    };
 
-    public override int GetHashCode() => HashCode.Combine(GetType(), _exception);
+    public override int GetHashCode() => HashCode.Combine(GetType(), _error);
 
     #endregion
 }
