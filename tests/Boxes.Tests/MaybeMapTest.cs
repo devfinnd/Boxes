@@ -28,7 +28,7 @@ public class MaybeMapTest
 
     public static IEnumerable<object[]> ObjectData()
     {
-        yield return new object[] { "SomeString", 15 };
-        yield return new object[] { DateTime.Now, DateTimeOffset.UtcNow };
+        yield return ["SomeString", 15];
+        yield return [DateTime.Now, DateTimeOffset.UtcNow];
     }
 }

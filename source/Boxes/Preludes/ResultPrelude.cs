@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using Boxes.Types;
 
 namespace Boxes.Preludes;
@@ -6,17 +7,15 @@ namespace Boxes.Preludes;
 [DebuggerStepThrough]
 public static class ResultPrelude
 {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Result<T> Success<T>(T value) => new Success<T>(value);
-    public static Result<T> Failure<T>(Exception exception) => new Failure<T>(exception);
-    public static Result<T> Try<T>(Func<T> func)
-    {
-        try
-        {
-            return Success(func());
-        }
-        catch (Exception exception)
-        {
-            return Failure<T>(exception);
-        }
-    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Result<T> Failure<T>(Error error) => new Failure<T>(error);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Result<T> Failure<T>(string message) => new Failure<T>(new SimpleError(message));
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Result<T> Failure<T>(string message, Exception exception) => new Failure<T>(new ExceptionalError(message, exception));
 }

@@ -17,7 +17,7 @@ public sealed class ResultMapTest
     [Fact]
     public void Result_MapFailure_ShouldWorkShouldThrowOnUnwrap()
     {
-        Result<int> a = Failure<int>(new Exception())
+        Result<int> a = Failure<int>("Expected Failure", new Exception())
             .Map(static x => x * 2);
 
         Assert.Throws<Exception>(() => a.Unwrap());
